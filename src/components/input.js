@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
+import fetchResponse from './openaiService';
 
-const QuestionForm = () => {
-  const [question, setQuestion] = useState('');
+const ChatWindow = () => {
+  const [messages, setMessages] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Perform LLM search and update the state with the search results
-    setQuestion('Searching for answers...');
+  const handleUserInput = async (question) => {
+    const response = await fetchResponse(question);
+    setMessages([...messages, { question, response }]);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="question">Question:</label>
-      <input
-        type="text"
-        id="question"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-      />
-      <button type="submit">Submit</button>
-    </form>
+    <div>
+      <div>
+        {messages.map((msg, index) => (
+          <div key={index}>
+            <p><b>User:</b> {msg.question}</p>
+            <p><b>LLM:</b> {msg.response}</p>
+          </div>
+        ))}
+      </div>
+      <InputBox onSubmit={handleUserInput} />
+    </div>
   );
 };
 
-export default QuestionForm;
+export default ChatWindow;
